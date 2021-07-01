@@ -1,0 +1,17 @@
+service: cakhose
+
+custom:
+  stage: ${opt:stage, 'dev'}
+  serviceName: snshose
+  S3BucketNameForFirehoseDestination: ${self:service}-${self:custom.stage}-snshose-destination
+  Stream: ${self:service}-${self:custom.stage}-stream
+
+provider:
+  name: aws
+  stage: dev
+  runtime: nodejs12.x
+
+resources:
+  - ${file(resources/s3-bucket.yml)}
+  - ${file(resources/firehose.yml)}
+  - ${file(resources/stream.yml)}

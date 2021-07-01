@@ -1,0 +1,45 @@
+Resources:
+  Stream:
+    Type: AWS::Kinesis::Stream
+    Properties:
+      Name: ${self:custom.Stream}
+      ShardCount: 1
+
+
+  StreamReaderRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: StreamReaderRole
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: firehose.amazonaws.com
+          Action: ['sts:AssumeRole']
+          Condition:
+            StringEquals:
+              'sts:ExternalId': !Ref 'AWS::AccountId'
+      Path: /
+  StreamReaderPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - kinesis:Get*
+              - kinesis:DescribeStream
+            Resource: 
+              !Join
+                - ''
+                - - 'arn:aws:kinesis:'
+                  - !Ref 'AWS::Region'
+                  - ':'
+                  - !Ref 'AWS::AccountId'
+                  - ':stream/'
+                  - ${self:custom.Stream}
+      Roles:
+        - !Ref StreamReaderRole
+
