@@ -1,0 +1,11 @@
+Resources:
+  S3BucketForFirehoseDestination:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.S3BucketNameForFirehoseDestination}
+      
+    
+Outputs:
+  S3BucketForFirehoseDestinationName:
+    Value:
+      Ref: S3BucketForFirehoseDestination

@@ -1,0 +1,17 @@
+service: consumer
+
+custom:
+  stage: ${opt:stage, 'dev'}
+  serviceName: consumer
+  sourceStreamArn: arn:aws:kinesis:${AWS::Region}:${env:PRODUCER_ACCOUNT_NO}:stream/producer-dev-stream
+  streamReaderRoleArn: arn:aws:iam::${env:PRODUCER_ACCOUNT_NO}:role/StreamReaderRole
+  S3BucketNameForFirehoseDestination: ${self:service}-${self:custom.stage}-firehose-destination
+
+provider:
+  name: aws
+  stage: dev
+  runtime: nodejs12.x
+
+resources:
+  - ${file(resources/firehose.yml)}
+  - ${file(resources/s3-bucket.yml)}

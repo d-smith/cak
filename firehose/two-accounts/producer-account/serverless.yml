@@ -1,0 +1,15 @@
+service: producer
+
+custom:
+  stage: ${opt:stage, 'dev'}
+  serviceName: producer
+  Stream: ${self:service}-${self:custom.stage}-stream
+  consumerAccount: ${env:CONSUMER_ACCOUNT_NO}
+
+provider:
+  name: aws
+  stage: dev
+  runtime: nodejs12.x
+
+resources:
+  - ${file(resources/stream.yml)}
