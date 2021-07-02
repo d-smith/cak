@@ -1,0 +1,34 @@
+Resources:
+  S3BucketForFirehoseDestination:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: ${self:custom.S3BucketNameForFirehoseDestination}
+      
+  CrossAccountBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3BucketForFirehoseDestination
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              AWS: ${self:custom.bucketWriterRoleArn}
+            Action:
+              - s3:AbortMultipartUpload
+              - s3:GetBucketLocation
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:ListBucketMultipartUploads
+              - s3:PutObject
+              - s3:PutObjectAcl
+            Resource:
+              - arn:aws:s3:::${self:custom.S3BucketNameForFirehoseDestination}
+              - arn:aws:s3:::${self:custom.S3BucketNameForFirehoseDestination}/*
+
+
+
+Outputs:
+  S3BucketForFirehoseDestinationName:
+    Value:
+      Ref: S3BucketForFirehoseDestination

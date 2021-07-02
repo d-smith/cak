@@ -1,0 +1,18 @@
+service: ca2-firehose
+
+custom:
+  stage: ${opt:stage, 'dev'}
+  serviceName: ca2-s-and-r
+  S3BucketNameForFirehoseDestination: ${self:custom.serviceName}-${self:custom.stage}-ca2-destination
+  Stream: ${self:custom.serviceName}-${self:custom.stage}-stream
+  streamReaderRoleName: StreamReaderRole
+  streamReaderRole: !Sub arn:aws:iam::${AWS::AccountId}:role/StreamReaderRole
+  firehoseDeliveryRole: !Sub arn:aws:iam::${AWS::AccountId}:role/ca2-s-and-r-dev-firehose-delivery-role
+
+provider:
+  name: aws
+  stage: dev
+  runtime: nodejs12.x
+
+resources:
+  - ${file(resources/firehose.yml)}

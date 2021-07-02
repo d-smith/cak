@@ -1,0 +1,30 @@
+Resources:
+
+
+  FirehoseDeliveryStream:
+    Type: AWS::KinesisFirehose::DeliveryStream
+    Properties:
+      DeliveryStreamName: ${self:custom.serviceName}-${self:custom.stage}-firehose-delivery-stream
+      DeliveryStreamType: KinesisStreamAsSource
+      KinesisStreamSourceConfiguration: 
+        KinesisStreamARN:
+          !Join
+            - ''
+            - - 'arn:aws:kinesis:'
+              - !Ref 'AWS::Region'
+              - ':'
+              - !Ref 'AWS::AccountId'
+              - ':stream/'
+              - ${self:custom.Stream}
+        RoleARN: ${self:custom.streamReaderRole}
+      ExtendedS3DestinationConfiguration:
+        BucketARN: arn:aws:s3:::${self:custom.S3BucketNameForFirehoseDestination}
+        BufferingHints:
+          IntervalInSeconds: 60
+          SizeInMBs: 3
+        CompressionFormat: UNCOMPRESSED
+        ErrorOutputPrefix: error/pubrecord/!{firehose:error-output-type}/year=!{timestamp:YYYY}/month=!{timestamp:MM}/day=!{timestamp:dd}/
+        Prefix: pubrecord/year=!{timestamp:YYYY}/month=!{timestamp:MM}/day=!{timestamp:dd}/
+        RoleARN: ${self:custom.firehoseDeliveryRole}
+          
+  

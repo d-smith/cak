@@ -1,0 +1,16 @@
+service: ca2-s-and-r
+
+custom:
+  stage: ${opt:stage, 'dev'}
+  serviceName: ca2-s-and-r
+  S3BucketNameForFirehoseDestination: ${self:service}-${self:custom.stage}-ca2-destination
+  Stream: ${self:service}-${self:custom.stage}-stream
+
+provider:
+  name: aws
+  stage: dev
+  runtime: nodejs12.x
+
+resources:
+  - ${file(resources/iam.yml)}
+  - ${file(resources/stream.yml)}

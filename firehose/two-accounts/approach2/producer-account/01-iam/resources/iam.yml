@@ -1,0 +1,37 @@
+Resources:
+  FirehoseDeliveryRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: ${self:service}-${self:custom.stage}-firehose-delivery-role
+      AssumeRolePolicyDocument:
+        Statement:
+          - Sid: ''
+            Effect: Allow
+            Principal:
+              Service: firehose.amazonaws.com
+            Action: 'sts:AssumeRole'
+            Condition:
+              StringEquals:
+                'sts:ExternalId': 
+                  Ref: 'AWS::AccountId'
+
+  FirehoseDeliveryToS3Policy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: ${self:service}-${self:custom.stage}-firehose-delivery-to-s3-policy
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action:
+              - s3:AbortMultipartUpload
+              - s3:GetBucketLocation
+              - s3:GetObject
+              - s3:ListBucket
+              - s3:ListBucketMultipartUploads
+              - s3:PutObject
+              - s3:PutObjectAcl
+            Resource:
+                - Fn::Sub: 'arn:aws:s3:::${self:custom.S3BucketNameForFirehoseDestination}'
+                - Fn::Sub: 'arn:aws:s3:::${self:custom.S3BucketNameForFirehoseDestination}*'
+      Roles:
+        - Ref: FirehoseDeliveryRole

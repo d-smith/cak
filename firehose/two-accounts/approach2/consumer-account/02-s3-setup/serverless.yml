@@ -1,0 +1,15 @@
+service: consumer
+
+custom:
+  stage: ${opt:stage, 'dev'}
+  serviceName: consumer
+  bucketWriterRoleArn: arn:aws:iam::${env:PRODUCER_ACCOUNT_NO}:role/ca2-s-and-r-dev-firehose-delivery-role
+  S3BucketNameForFirehoseDestination: ca2-s-and-r-dev-ca2-destination
+
+provider:
+  name: aws
+  stage: dev
+  runtime: nodejs12.x
+
+resources:
+  - ${file(resources/s3-bucket.yml)}
