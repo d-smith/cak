@@ -2,3 +2,5 @@
 target/
 dependency-reduced-pom.xml
 .ipynb_checkpoints/
+.idea/
+*.iml
