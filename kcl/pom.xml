@@ -7,8 +7,18 @@
     <packaging>jar</packaging>
     <version>0.0.1</version>
 
-    
-    
+        <dependencyManagement>
+            <dependencies>
+                <dependency>
+                    <groupId>software.amazon.awssdk</groupId>
+                    <artifactId>bom</artifactId>
+                    <version>2.16.95</version>
+                    <type>pom</type>
+                    <scope>import</scope>
+                </dependency>
+            </dependencies>
+        </dependencyManagement>
+
 
     <properties>
         <aws-kinesis-client.version>2.2.8</aws-kinesis-client.version>
@@ -17,6 +27,11 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>sts</artifactId>
+            <version>2.16.95</version>
+        </dependency>
         <dependency>
             <groupId>software.amazon.kinesis</groupId>
             <artifactId>amazon-kinesis-client</artifactId>
@@ -59,7 +74,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>com.ds.kclsample.Sample</mainClass>
+                                    <mainClass>com.ds.kclsample.Sample2</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

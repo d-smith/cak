@@ -4,12 +4,12 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import software.amazon.awssdk.auth.credentials.ProfileCredentialsProvider;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient;
 import software.amazon.awssdk.services.dynamodb.DynamoDbAsyncClient;
 import software.amazon.awssdk.services.kinesis.KinesisAsyncClient;
 import software.amazon.kinesis.common.ConfigsBuilder;
-import software.amazon.kinesis.common.KinesisClientUtil;
 import software.amazon.kinesis.coordinator.Scheduler;
 import software.amazon.kinesis.exceptions.InvalidStateException;
 import software.amazon.kinesis.exceptions.ShutdownException;
@@ -27,29 +27,22 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-public class Sample {
-
-    private static final Logger log = LoggerFactory.getLogger(Sample.class);
-    public static void main(String... args) {
-        final String streamName = "ExampleInputStream";
-        final String region = "us-east-1";
-
-       log.info("Running with stream name of {} in region {}", streamName, region);
-
-        new Sample(streamName, region).run();
-    }
+public class SampleProcessor {
+    private static final Logger log = LoggerFactory.getLogger(SampleProcessor.class);
 
     private final String streamName;
     private final Region region;
     private final KinesisAsyncClient kinesisClient;
+    private final String profileName;
 
-    private Sample(String streamName, String region) {
+    public SampleProcessor(String profileName, String streamName, String region, KinesisAsyncClient kinesisClient) {
         this.streamName = streamName;
         this.region = Region.of(ObjectUtils.firstNonNull(region, "us-east-1"));
-        this.kinesisClient = KinesisClientUtil.createKinesisAsyncClient(KinesisAsyncClient.builder().region(this.region));
+        this.kinesisClient = kinesisClient;
+        this.profileName = profileName;
     }
 
-    private void run() {
+    public void run() {
 
 
         /**
@@ -57,9 +50,13 @@ public class Sample {
          * ShardRecordProcessorFactory, is where the logic for record processing lives, and is located in a private
          * class below.
          */
-        DynamoDbAsyncClient dynamoClient = DynamoDbAsyncClient.builder().region(region).build();
-        CloudWatchAsyncClient cloudWatchClient = CloudWatchAsyncClient.builder().region(region).build();
-        ConfigsBuilder configsBuilder = new ConfigsBuilder(streamName, streamName, kinesisClient, dynamoClient, cloudWatchClient, UUID.randomUUID().toString(), new SampleRecordProcessorFactory());
+        DynamoDbAsyncClient dynamoClient = DynamoDbAsyncClient.builder()
+                .credentialsProvider(ProfileCredentialsProvider.create("ca"))
+                .region(region).build();
+        CloudWatchAsyncClient cloudWatchClient = CloudWatchAsyncClient.builder()
+                .credentialsProvider(ProfileCredentialsProvider.create("ca"))
+                .region(region).build();
+        ConfigsBuilder configsBuilder = new ConfigsBuilder(streamName, streamName, kinesisClient, dynamoClient, cloudWatchClient, UUID.randomUUID().toString(), new SampleProcessor.SampleRecordProcessorFactory());
 
         /**
          * The Scheduler (also called Worker in earlier versions of the KCL) is the entry point to the KCL. This
@@ -116,7 +113,7 @@ public class Sample {
 
     private static class SampleRecordProcessorFactory implements ShardRecordProcessorFactory {
         public ShardRecordProcessor shardRecordProcessor() {
-            return new SampleRecordProcessor();
+            return new SampleProcessor.SampleRecordProcessor();
         }
     }
 
@@ -124,7 +121,7 @@ public class Sample {
 
         private static final String SHARD_ID_MDC_KEY = "ShardId";
 
-        private static final Logger log = LoggerFactory.getLogger(SampleRecordProcessor.class);
+        private static final Logger log = LoggerFactory.getLogger(SampleProcessor.SampleRecordProcessor.class);
 
         private String shardId;
 
