@@ -1,5 +1,14 @@
 # cross-account kinesis (CAK)
 
+Misc projects to illustrate the use of Kinesis products:
+
+* firehose - Firehose related projects
+* kcl - Kinesis Consumer Library
+* kda-j - Kinesis Data Analytics for Java
+* ksa-s - Kinesis Data Analytics for SQL
+* kef - Kinesis data streams enhanced fan out consumers
+
+
 
 Resources:
 
