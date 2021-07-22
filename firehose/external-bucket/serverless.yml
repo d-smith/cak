@@ -1,0 +1,16 @@
+service: cakhose2
+
+custom:
+  stage: ${opt:stage, 'dev'}
+  serviceName: cakhose2
+  S3BucketNameForFirehoseDestination: sink-acount-bucket
+  Stream: ${self:service}-${self:custom.stage}-stream
+
+provider:
+  name: aws
+  stage: dev
+  runtime: nodejs12.x
+
+resources:
+  - ${file(resources/firehose.yml)}
+  - ${file(resources/stream.yml)}
