@@ -11,56 +11,37 @@
 
     <properties>
         <java.version>1.11</java.version>
-        <scala.binary.version>2.12</scala.binary.version>
         <kda.version>2.0.0</kda.version>
         <kda.runtime.version>1.2.0</kda.runtime.version>
         <flink.version>1.11.1</flink.version>
+        <flink-connector.version>1.8.2-EFO</flink-connector.version>
+        <amazon-kinesis-connector-flink.version>2.0.0</amazon-kinesis-connector-flink.version>
+        <maven.compiler.source>1.11</maven.compiler.source>
+        <maven.compiler.target>1.11</maven.compiler.target>
+        <jackson2.version>2.12.1</jackson2.version>
     </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.amazonaws</groupId>
-                <artifactId>aws-java-sdk-bom</artifactId>
-                <!-- Get the latest SDK version from https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-bom -->
-                <version>1.11.903</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-streaming-java_2.11</artifactId>
+            <version>${flink.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>software.amazon.kinesis</groupId>
+            <artifactId>amazon-kinesis-connector-flink</artifactId>
+            <version>${amazon-kinesis-connector-flink.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-kinesisanalytics-runtime</artifactId>
             <version>${kda.runtime.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-kinesis_${scala.binary.version}</artifactId>
-            <version>${flink.version}</version>
-        </dependency>
 
-        <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-streaming-java_${scala.binary.version}</artifactId>
-            <version>${flink.version}</version>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-kinesisanalytics-flink</artifactId>
-            <version>${kda.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-logs</artifactId>
-            <!-- scope>compile</scope -->
-        </dependency>
     </dependencies>
 
     <build>

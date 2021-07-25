@@ -4,10 +4,10 @@ import com.amazonaws.services.kinesisanalytics.runtime.KinesisAnalyticsRuntime;
 import org.apache.flink.api.common.serialization.SimpleStringSchema;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-import org.apache.flink.streaming.connectors.kinesis.FlinkKinesisConsumer;
-import org.apache.flink.streaming.connectors.kinesis.FlinkKinesisProducer;
-import org.apache.flink.streaming.connectors.kinesis.config.ConsumerConfigConstants;
-import org.apache.flink.streaming.connectors.kinesis.config.AWSConfigConstants;
+import software.amazon.kinesis.connectors.flink.FlinkKinesisConsumer;
+import software.amazon.kinesis.connectors.flink.FlinkKinesisProducer;
+import software.amazon.kinesis.connectors.flink.config.ConsumerConfigConstants;
+import software.amazon.kinesis.connectors.flink.config.AWSConfigConstants;
 
 import java.io.IOException;
 import java.util.Map;
@@ -31,6 +31,8 @@ public class BasicStreamingJob2Accounts {
         inputProperties.setProperty(AWSConfigConstants.AWS_CREDENTIALS_PROVIDER, "ASSUME_ROLE");
         inputProperties.setProperty(AWSConfigConstants.AWS_ROLE_ARN, roleArn);
         inputProperties.setProperty(AWSConfigConstants.AWS_ROLE_SESSION_NAME, roleSessionName);
+        inputProperties.setProperty(ConsumerConfigConstants.RECORD_PUBLISHER_TYPE, "EFO");
+        inputProperties.setProperty(ConsumerConfigConstants.EFO_CONSUMER_NAME, "samplecon");
 
         return env.addSource(new FlinkKinesisConsumer<>(inputStreamName, new SimpleStringSchema(), inputProperties));
     }
